@@ -5,7 +5,7 @@ all:
 	g++ $(CFLAGS) -Wall -g shifter.cc -o shifter $(LIBS)
 
 clean:
-	rm shifter
+	rm -f shifter
 
 install: shifter
 	cp shifter /usr/local/bin/
