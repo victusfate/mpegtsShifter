@@ -6,5 +6,5 @@ the plan is for this to bypass an error I'm seeing in ffmpeg for mpegts file cre
 
 usage:
 <pre>
-  ./shifter <input MPEG-TS file> <offset time> <output MPEG-TS file>
+  ./shifter (input MPEG-TS file) (offset time seconds) (output MPEG-TS file)
 </pre>
