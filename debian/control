@@ -1,0 +1,12 @@
+Source: cameo-mpegtsshifter
+Section: media
+Priority: extra
+Maintainer: Fastsociety Ops <ops@fastsociety.com>
+Build-Depends: debhelper (>= 8.0.0), libavcodec-dev, libavformat-dev, libavutil-dev
+Standards-Version: 3.9.2
+Homepage: http://cameo.tv
+
+Package: cameo-mpegtsshifter
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Shifter - A MPEG-TS stream file timestamp shifter
