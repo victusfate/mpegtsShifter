@@ -18,8 +18,6 @@ static AVStream * addStream(AVFormatContext *pFormatCtx, AVStream *pInStream) {
     AVCodec         *pCodec         = NULL;
     AVStream        *pOutStream     = NULL;
     AVDictionary    *pOptionsDict   = NULL;
-    // AVCodecContext *pInCodecCtx;
-    // AVCodecContext *pOutCodecCtx;
 
     // cout << "addStream 0" << endl;
 
@@ -112,7 +110,6 @@ int main(int argc, char **argv)
     string input;
     string outputPrefix;
 
-    double prevSegmentTime = 0;
     AVInputFormat *pInFormat = NULL;
     AVOutputFormat *pOutFormat = NULL;
     AVFormatContext *pInFormatCtx = NULL;
@@ -123,7 +120,6 @@ int main(int argc, char **argv)
     int videoIndex;
     int audioIndex;
     int decodeDone;
-    // char *dot;
     int ret;
     unsigned int i;
 
@@ -245,7 +241,7 @@ int main(int argc, char **argv)
     // cout << "0.992" << endl;
 
     do {
-        double segmentTime;
+        // double segmentTime;
         AVPacket packet;
 
         decodeDone = av_read_frame(pInFormatCtx, &packet);
@@ -257,16 +253,6 @@ int main(int argc, char **argv)
             cout << "Could not duplicate packet" << endl;
             av_free_packet(&packet);
             break;
-        }
-
-        if (packet.stream_index == videoIndex && (packet.flags & AV_PKT_FLAG_KEY)) {
-            segmentTime = (double)pVideoStream->pts.val * pVideoStream->time_base.num / pVideoStream->time_base.den;
-        }
-        else if (videoIndex < 0) {
-            segmentTime = (double)pAudioStream->pts.val * pAudioStream->time_base.num / pAudioStream->time_base.den;
-        }
-        else {
-            segmentTime = prevSegmentTime;
         }
 
         // cout << "before packet pts dts " << packet.pts << " " << packet.dts;
