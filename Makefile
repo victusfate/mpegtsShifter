@@ -10,8 +10,8 @@ clean:
 	rm -f shifter
 
 install: shifter
-	mkdir -p $(DESTDIR)/usr/local/bin/
-	cp shifter $(DESTDIR)/usr/local/bin/
+	mkdir -p $(DESTDIR)/usr/bin/
+	cp shifter $(DESTDIR)/usr/bin/
 
 uninstall:
-	rm /usr/local/bin/shifter
+	rm $(DESTDIR)/usr/bin/shifter
