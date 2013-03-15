@@ -239,12 +239,14 @@ int main(int argc, char **argv)
     }
 
     // cout << "0.992" << endl;
+    const unsigned long MAX_PACKETS = 1000000;
+    unsigned long iPacket = 0;
 
     do {
         // double segmentTime;
         AVPacket packet;
 
-        decodeDone = av_read_frame(pInFormatCtx, &packet);
+        decodeDone = av_read_frame(pInFormatCtx, &packet);       
         if (decodeDone < 0) {
             break;
         }
@@ -272,6 +274,8 @@ int main(int argc, char **argv)
         }
 
         av_free_packet(&packet);
+
+        if (iPacket++ >= MAX_PACKETS) break;
 
     } while (!decodeDone);
 
