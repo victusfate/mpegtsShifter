@@ -241,6 +241,7 @@ int main(int argc, char **argv)
     // cout << "0.992" << endl;
     const unsigned long MAX_PACKETS = 1000000;
     unsigned long iPacket = 0;
+    double ptsZero = 0, dtsZero = 0;
 
     do {
         // double segmentTime;
@@ -256,10 +257,16 @@ int main(int argc, char **argv)
             av_free_packet(&packet);
             break;
         }
+        if (iPacket == 0) {
+            ptsZero = packet.pts;
+            dtsZero = packet.dts;
+        }
 
         // cout << "before packet pts dts " << packet.pts << " " << packet.dts;
-        packet.pts += tsShift;
-        packet.dts += tsShift;
+        packet.pts = packet.pts - ptsZero + tsShift;
+        packet.dts = packet.dts - dtsZero + tsShift;
+        // packet.pts += tsShift;
+        // packet.dts += tsShift;
         // cout << " after packet pts dts " << packet.pts << " " << packet.dts << endl;
 
 
