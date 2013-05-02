@@ -77,6 +77,7 @@ static AVStream * addStream(AVFormatContext *pFormatCtx, AVStream *pInStream) {
 
     switch (pInCodecCtx->codec_type) {
         case AVMEDIA_TYPE_AUDIO:
+            // cout << "AUDIO CODEC" << endl;
             pOutCodecCtx->channel_layout = pInCodecCtx->channel_layout;
             pOutCodecCtx->sample_rate = pInCodecCtx->sample_rate;
             pOutCodecCtx->channels = pInCodecCtx->channels;
@@ -89,6 +90,7 @@ static AVStream * addStream(AVFormatContext *pFormatCtx, AVStream *pInStream) {
             }
             break;
         case AVMEDIA_TYPE_VIDEO:
+            // cout << "VIDEO CODEC" << endl;
             pOutCodecCtx->pix_fmt = pInCodecCtx->pix_fmt;
             pOutCodecCtx->width = pInCodecCtx->width;
             pOutCodecCtx->height = pInCodecCtx->height;
@@ -154,6 +156,7 @@ int main(int argc, char **argv)
         cout << "Could not open input file, make sure it is an mpegts file: " << ret << endl;
         exit(1);
     }
+    // pInFormatCtx->max_analyze_duration = 1000000;
     // cout << "0.6" << endl;
 
     if (avformat_find_stream_info(pInFormatCtx, NULL) < 0) {
@@ -184,22 +187,39 @@ int main(int argc, char **argv)
     videoIndex = -1;
     audioIndex = -1;
 
+    // cout << "pInFormatCtx->nb_streams " << pInFormatCtx->nb_streams << endl;
+
     for (i = 0; i < pInFormatCtx->nb_streams && (videoIndex < 0 || audioIndex < 0); i++) {
         // cout << "checking streams for video, current stream type = " << pInFormatCtx->streams[i]->codec->codec_type;
         // cout << " AVMEDIA_TYPE_VIDEO = " << AVMEDIA_TYPE_VIDEO << " AVMEDIA_TYPE_AUDIO = " <<  AVMEDIA_TYPE_AUDIO << endl;
 
+        int64_t durationInt = pInFormatCtx->duration;
+        double durationSeconds = (double)durationInt / AV_TIME_BASE;        
+        double fps = av_q2d(pInFormatCtx->streams[i]->avg_frame_rate);
+        unsigned int frameCount = 0;
+        if (pInFormatCtx->streams[i]->nb_frames > 0) {
+            frameCount = pInFormatCtx->streams[i]->nb_frames;
+        }
+        else {
+            frameCount = floor(durationSeconds * fps);
+        } 
+        if (frameCount <= 0) continue;
+
         switch (pInFormatCtx->streams[i]->codec->codec_type) {
             case AVMEDIA_TYPE_VIDEO:
+                // cout << "Initial for loop VIDEO CODEC, frames " << frameCount << endl;
                 videoIndex = i;
                 pInFormatCtx->streams[i]->discard = AVDISCARD_NONE;
                 pVideoStream = addStream(pOutFormatCtx, pInFormatCtx->streams[i]);
                 break;
             case AVMEDIA_TYPE_AUDIO:
+                // cout << "Initial for loop AUDIO CODEC, frames " << frameCount << endl;
                 audioIndex = i;
                 pInFormatCtx->streams[i]->discard = AVDISCARD_NONE;
                 pAudioStream = addStream(pOutFormatCtx, pInFormatCtx->streams[i]);
                 break;
             default:
+                // cout << "Initial for loop AVDISCARD_ALL" << endl;
                 pInFormatCtx->streams[i]->discard = AVDISCARD_ALL;
                 break;
         }
